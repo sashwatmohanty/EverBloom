@@ -137,18 +137,12 @@ export default function MenuList() {
                   </div>
 
                   <div className="pt-4 border-t border-[#f0e6dc] flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wide">
-                      Freshly Prepared
+                    <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wide flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" /> Freshly Prepared
                     </span>
-
-                    <a
-                      href={`https://wa.me/919437164578?text=Hi%20Everbloom%2C%20I%20would%20like%20to%20order%20${encodeURIComponent(item.name)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-caramel px-4 py-2 text-xs font-bold gap-1.5 shadow-sm"
-                    >
-                      <MessageCircle className="w-3.5 h-3.5" /> Order on WhatsApp
-                    </a>
+                    <span className="text-[11px] font-semibold text-[#6b5c54]">
+                      Dine-in &amp; Takeaway
+                    </span>
                   </div>
                 </div>
               </div>

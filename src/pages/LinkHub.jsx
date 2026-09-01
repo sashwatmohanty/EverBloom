@@ -7,7 +7,7 @@ import {
 const links = [
   { id: "1", title: "Explore Our Full Menu", description: "Artisanal coffees, peri-peri wraps, pizzas & coolers", url: "/menu", icon: <Utensils className="w-5 h-5" /> },
   { id: "2", title: "Locate on Google Maps", description: "Near Sum Ultimate Medicare, Kalinga Nagar, Bhubaneswar", url: "https://maps.google.com/?q=Everbloom+Kalinga+Nagar+Bhubaneswar", icon: <MapPin className="w-5 h-5" /> },
-  { id: "3", title: "Order via WhatsApp", description: "Direct chat with Everbloom team for quick orders", url: "https://wa.me/919437164578?text=Hi%20Everbloom%2C%20I%20would%20like%20to%20order", icon: <Phone className="w-5 h-5" /> },
+  { id: "3", title: "Call & Contact Us", description: "Inquire about table availability & party bookings", url: "tel:09437164578", icon: <Phone className="w-5 h-5" /> },
   { id: "4", title: "Photo Gallery", description: "View hand-painted mural, AC lounge & nature patio", url: "/gallery", icon: <Sparkles className="w-5 h-5" /> },
   { id: "5", title: "Table Reservation", description: "Book seating for birthday parties & gatherings", url: "/booking", icon: <Calendar className="w-5 h-5" /> },
   { id: "6", title: "Follow on Instagram", description: "Tag @everbloomcafe in your stories and reels", url: "https://instagram.com", icon: <Instagram className="w-5 h-5" /> },
