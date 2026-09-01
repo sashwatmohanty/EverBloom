@@ -1,10 +1,9 @@
 import {
   HeroSection,
   AmbienceShowcase,
-  FeaturedMenuSection,
-  HighlightsSection,
-  EventsPreview,
   ReviewsSection,
+  FeaturedMenuSection,
+  EventsPreview,
   VisitCTASection,
 } from "../components/Home";
 
@@ -13,10 +12,9 @@ export default function Home() {
     <div className="overflow-hidden">
       <HeroSection />
       <AmbienceShowcase />
-      <FeaturedMenuSection />
-      <HighlightsSection />
-      <EventsPreview />
       <ReviewsSection />
+      <FeaturedMenuSection />
+      <EventsPreview />
       <VisitCTASection />
     </div>
   );

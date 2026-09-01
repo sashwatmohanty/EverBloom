@@ -1,45 +1,39 @@
-import { MapPin, Phone } from "lucide-react";
+import { Link } from "react-router";
 
 export default function VisitCTASection() {
   return (
-    <section className="section-padding py-20 lg:py-28 bg-[#faf7f2]">
-      <div className="max-w-5xl mx-auto">
-        <div className="rounded-3xl glass-espresso p-8 sm:p-12 lg:p-14 relative overflow-hidden text-center shadow-2xl">
-          {/* Subtle warm caramel halo */}
-          <div className="absolute -top-20 -right-20 w-80 h-80 bg-[#c88242]/20 rounded-full blur-3xl pointer-events-none" />
+    <section className="section-padding py-24 lg:py-32 bg-white text-[#1c1109] relative">
+      <div className="max-w-3xl mx-auto text-center">
+        {/* Eyebrow */}
+        <span className="text-[11px] sm:text-xs tracking-[0.25em] text-[#c88242] uppercase font-bold block mb-3">
+          RESERVATIONS
+        </span>
 
-          <div className="relative z-10 max-w-2xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-semibold mb-6">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              Open Daily: 1:00 PM – 11:00 PM
-            </div>
+        {/* Heading */}
+        <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal mb-4 text-[#1c1109]">
+          Book Your Experience
+        </h2>
 
-            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-4">
-              Drop By Everbloom Today
-            </h2>
+        {/* Subtitle */}
+        <p className="text-xs sm:text-sm md:text-base text-[#6b5c54] font-light max-w-md mx-auto mb-10 leading-relaxed">
+          Reserve your table for an evening of exceptional dining and ambiance.
+        </p>
 
-            <p className="text-sm sm:text-base text-white/80 leading-relaxed mb-8">
-              K-8/796, Near Sum Ultimate Medicare, K8 Kalinga Nagar, Bhubaneswar. Perfect for artisanal coffee breaks, friend hangouts, and delicious gourmet bites.
-            </p>
+        {/* Center Actions */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-5 sm:gap-6">
+          <Link
+            to="/booking"
+            className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#d49748] hover:bg-[#e0a455] active:scale-[0.98] text-[#1c1109] font-bold text-xs sm:text-sm tracking-[0.14em] uppercase shadow-md transition-all"
+          >
+            BOOK A TABLE
+          </Link>
 
-            <div className="flex flex-wrap items-center justify-center gap-4">
-              <a
-                href="https://maps.google.com/?q=Everbloom+Kalinga+Nagar+Bhubaneswar"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-caramel px-8 py-3.5 text-sm font-bold gap-2 shadow-xl"
-              >
-                <MapPin className="w-4 h-4" /> Open in Google Maps
-              </a>
-
-              <a
-                href="tel:09437164578"
-                className="btn-outline-espresso px-8 py-3.5 text-sm font-bold gap-2 border-white/30 text-white hover:bg-white/10"
-              >
-                <Phone className="w-4 h-4 text-[#e29b5a]" /> Call 094371 64578
-              </a>
-            </div>
-          </div>
+          <a
+            href="tel:09437164578"
+            className="text-xs sm:text-sm text-[#6b5c54] font-medium hover:text-[#1c1109] transition-colors"
+          >
+            Call us: <span className="font-bold text-[#1c1109]">+91 94371 64578</span>
+          </a>
         </div>
       </div>
     </section>

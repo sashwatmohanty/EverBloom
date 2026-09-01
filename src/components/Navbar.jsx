@@ -1,15 +1,13 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router";
-import { Menu, X, Phone, MapPin, Sparkles, ChevronRight, Clock, Coffee } from "lucide-react";
+import { Menu, X, ChevronRight, Sparkles, Phone, MapPin, Clock } from "lucide-react";
 
 const navLinks = [
-  { label: "Home", path: "/" },
-  { label: "About Us", path: "/about" },
-  { label: "Our Menu", path: "/menu" },
-  { label: "Gallery", path: "/gallery" },
-  { label: "Contact & Location", path: "/contact" },
-  { label: "Events & Offers", path: "/events" },
-  { label: "Book Table", path: "/booking" },
+  { label: "HOME", path: "/" },
+  { label: "ABOUT", path: "/about" },
+  { label: "MENU", path: "/menu" },
+  { label: "GALLERY", path: "/gallery" },
+  { label: "CONTACT", path: "/contact" },
 ];
 
 export default function Navbar() {
@@ -23,12 +21,10 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Close mobile drawer on route change
   useEffect(() => {
     setMobileOpen(false);
   }, [location.pathname]);
 
-  // Lock body scroll when mobile drawer is open
   useEffect(() => {
     if (mobileOpen) {
       document.body.style.overflow = "hidden";
@@ -42,80 +38,63 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-2.5 sm:py-4 px-2.5 sm:px-6 lg:px-10 flex justify-center">
+      <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-3 sm:py-4 px-3 sm:px-6 lg:px-10 flex justify-center">
         <nav
-          className={`w-full max-w-6xl transition-all duration-300 rounded-full px-3 xs:px-4 sm:px-6 py-1.5 xs:py-2 sm:py-2.5 flex items-center justify-between ${scrolled ? "glass-nav-white-scrolled" : "glass-nav-white"
-            }`}
+          className={`w-full max-w-5xl transition-all duration-300 rounded-full px-4 sm:px-7 py-2 sm:py-2.5 flex items-center justify-between ${
+            scrolled ? "glass-nav-white-scrolled" : "glass-nav-white"
+          }`}
         >
           {/* Brand Logo & Name */}
-          <Link to="/" className="flex items-center gap-2 xs:gap-2.5 shrink-0 group py-0.5">
+          <Link to="/" className="flex items-center gap-2.5 shrink-0 group py-0.5">
             <img
               src="/everbloom/logo.png"
-              alt="Everbloom Café"
-              className="h-8 xs:h-9 sm:h-11 md:h-12 w-auto object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-sm"
+              alt="Everbloom"
+              className="h-8 sm:h-9 w-auto object-contain group-hover:scale-105 transition-transform"
             />
-            <span className="font-display font-black text-sm xs:text-base sm:text-lg md:text-xl tracking-tight text-[#2b1810] whitespace-nowrap group-hover:text-[#c88242] transition-colors">
-              Everbloom <span className="font-bold text-[#c88242]">Café</span>
+            <span className="font-serif font-bold text-sm sm:text-base tracking-[0.2em] text-[#1c1109] uppercase whitespace-nowrap">
+              EVERBLOOM
             </span>
           </Link>
 
           {/* Desktop Nav Links */}
-          <div className="hidden md:flex items-center gap-1 lg:gap-1.5 bg-[#f5ede4]/70 p-1 rounded-full border border-[#e8ded3]">
-            {[
-              { label: "Home", path: "/" },
-              { label: "About", fullLabel: "About Us", path: "/about" },
-              { label: "Menu", path: "/menu" },
-              { label: "Gallery", path: "/gallery" },
-              { label: "Contact", path: "/contact" },
-            ].map((link) => {
+          <div className="hidden md:flex items-center gap-6 lg:gap-8">
+            {navLinks.map((link) => {
               const active = location.pathname === link.path;
               return (
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`px-3 lg:px-4 py-1.5 text-xs lg:text-sm font-medium rounded-full transition-all duration-300 whitespace-nowrap ${active
-                      ? "bg-[#2b1810] text-white shadow-md font-semibold"
-                      : "text-[#4a3b32] hover:text-[#2b1810] hover:bg-white/80"
-                    }`}
+                  className={`text-xs tracking-[0.15em] font-semibold transition-colors duration-200 uppercase relative py-1 ${
+                    active
+                      ? "text-[#c88242]"
+                      : "text-[#4a3b32] hover:text-[#1c1109]"
+                  }`}
                 >
-                  <span className="hidden lg:inline">{link.fullLabel || link.label}</span>
-                  <span className="lg:hidden">{link.label}</span>
+                  {link.label}
+                  {active && (
+                    <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#c88242] rounded-full" />
+                  )}
                 </Link>
               );
             })}
           </div>
 
-          {/* Right Action Buttons */}
-          <div className="flex items-center gap-1.5 xs:gap-2 sm:gap-2.5">
-            {/* Quick Phone Call (Desktop/Tablet) */}
-            <a
-              href="tel:09437164578"
-              className="hidden lg:inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-full bg-[#f5ede4] hover:bg-[#ebdccf] text-[#2b1810] transition-all border border-[#e4d6c8] whitespace-nowrap shadow-xs"
-              title="Call Everbloom Café"
+          {/* Right: Book Table Button & Hamburger */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link
+              to="/booking"
+              className="hidden sm:inline-flex items-center justify-center px-5 py-2 rounded-full bg-[#1c1109] hover:bg-[#2e1c10] active:scale-95 text-white text-xs font-bold tracking-[0.14em] uppercase transition-all duration-200 shadow-md"
             >
-              <Phone className="w-3.5 h-3.5 text-[#c88242]" />
-              <span>094371 64578</span>
-            </a>
+              BOOK TABLE
+            </Link>
 
-            {/* Visit / Directions Pill Button */}
-            <a
-              href="https://maps.google.com/?q=Everbloom+Kalinga+Nagar+Bhubaneswar"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-caramel px-3 xs:px-4 sm:px-5 py-1.5 xs:py-2 text-[11px] xs:text-xs font-bold gap-1 xs:gap-1.5 tracking-wide shadow-md whitespace-nowrap"
-            >
-              <MapPin className="w-3 xs:w-3.5 h-3 xs:h-3.5" />
-              <span className="hidden sm:inline">Directions</span>
-              <span className="sm:hidden">Visit</span>
-            </a>
-
-            {/* Mobile Hamburger Toggle Button */}
+            {/* Mobile Hamburger Button */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden w-8 h-8 xs:w-9 xs:h-9 flex items-center justify-center rounded-full text-[#2b1810] bg-[#f5ede4] hover:bg-[#ebdccf] active:scale-95 transition-all border border-[#e4d6c8] shrink-0"
-              aria-label="Toggle navigation menu"
+              className="md:hidden p-2 rounded-full text-[#1c1109] hover:bg-black/5 active:scale-95 transition-all"
+              aria-label="Toggle menu"
             >
-              {mobileOpen ? <X className="w-4 h-4 xs:w-5 xs:h-5 text-[#c88242]" /> : <Menu className="w-4 h-4 xs:w-5 xs:h-5" />}
+              {mobileOpen ? <X className="w-5 h-5 text-[#c88242]" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </nav>
@@ -123,34 +102,34 @@ export default function Navbar() {
 
       {/* Mobile Drawer Overlay */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-md pt-20 px-3 xs:px-4 pb-6 flex flex-col justify-between animate-fade-in-down md:hidden">
-          <div className="bg-white/98 backdrop-blur-2xl rounded-3xl p-5 border border-[#e8ded3] shadow-2xl flex flex-col justify-between h-full max-h-[85vh] overflow-y-auto">
+        <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-md pt-20 px-4 pb-6 flex flex-col justify-between animate-fade-in-down md:hidden">
+          <div className="bg-white rounded-3xl p-6 border border-[#e8ded3] shadow-2xl flex flex-col justify-between h-full max-h-[85vh] overflow-y-auto">
             <div>
               {/* Header inside drawer */}
               <div className="flex items-center justify-between pb-4 border-b border-[#f0e6dc] mb-4">
                 <div className="flex items-center gap-2.5">
                   <img
                     src="/everbloom/logo.png"
-                    alt="Everbloom Café"
+                    alt="Everbloom"
                     className="h-9 w-auto object-contain"
                   />
                   <div>
-                    <span className="font-display font-black text-base text-[#2b1810] block leading-tight">
-                      Everbloom <span className="font-bold text-[#c88242]">Café</span>
+                    <span className="font-serif font-bold text-sm tracking-[0.2em] uppercase text-[#1c1109] block">
+                      EVERBLOOM
                     </span>
-                    <span className="text-[10px] text-[#6b5c54]">Kalinga Nagar, Bhubaneswar</span>
+                    <span className="text-[10px] text-[#6b5c54]">Bhubaneswar, Odisha</span>
                   </div>
                 </div>
                 <button
                   onClick={() => setMobileOpen(false)}
-                  className="w-8 h-8 rounded-full bg-[#faf7f2] flex items-center justify-center text-[#2b1810] border border-[#e8ded3]"
+                  className="w-8 h-8 rounded-full bg-[#faf7f2] flex items-center justify-center text-[#1c1109]"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
               {/* Navigation Links */}
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-2">
                 {navLinks.map((link) => {
                   const active = location.pathname === link.path;
                   return (
@@ -158,58 +137,33 @@ export default function Navbar() {
                       key={link.path}
                       to={link.path}
                       onClick={() => setMobileOpen(false)}
-                      className={`px-4 py-3 text-sm font-semibold rounded-2xl transition-all flex items-center justify-between ${active
-                          ? "bg-[#2b1810] text-white shadow-md"
-                          : "text-[#3d2e26] hover:bg-[#f8f3ee] hover:text-[#2b1810]"
-                        }`}
+                      className={`px-4 py-3 text-xs font-bold tracking-[0.14em] uppercase rounded-2xl transition-all flex items-center justify-between ${
+                        active
+                          ? "bg-[#1c1109] text-white shadow-md"
+                          : "text-[#3d2e26] hover:bg-[#faf7f2]"
+                      }`}
                     >
-                      <span className="flex items-center gap-2.5">
-                        {active ? (
-                          <Sparkles className="w-3.5 h-3.5 text-[#e29b5a]" />
-                        ) : (
-                          <Coffee className="w-3.5 h-3.5 text-[#c88242]/70" />
-                        )}
-                        {link.label}
-                      </span>
-                      <ChevronRight className={`w-4 h-4 ${active ? "text-[#e29b5a]" : "text-gray-400"}`} />
+                      <span>{link.label}</span>
+                      <ChevronRight className={`w-4 h-4 ${active ? "text-[#c88242]" : "text-gray-400"}`} />
                     </Link>
                   );
                 })}
               </div>
             </div>
 
-            {/* Bottom Info & Quick Action Buttons */}
+            {/* Bottom Actions */}
             <div className="pt-4 border-t border-[#f0e6dc] flex flex-col gap-3 mt-4">
-              <div className="p-3.5 rounded-2xl bg-[#faf5f0] border border-[#eee2d5] text-left">
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-1.5 text-xs text-[#c88242] font-bold uppercase tracking-wider">
-                    <Clock className="w-3.5 h-3.5" /> 1:00 PM – 11:00 PM
-                  </div>
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Open Daily
-                  </span>
-                </div>
-                <p className="text-[11px] text-[#5a4c44] leading-relaxed">
-                  Near Sum Ultimate Medicare, Kalinga Nagar, Bhubaneswar
-                </p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <a
-                  href="tel:09437164578"
-                  className="btn-espresso py-2.5 text-xs flex items-center justify-center gap-1.5 shadow-sm"
-                >
-                  <Phone className="w-3.5 h-3.5 text-[#e29b5a]" />
-                  Call Us
-                </a>
-                <a
-                  href="https://maps.google.com/?q=Everbloom+Kalinga+Nagar+Bhubaneswar"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-caramel py-2.5 text-xs flex items-center justify-center gap-1.5 shadow-sm"
-                >
-                  <MapPin className="w-3.5 h-3.5" />
-                  Directions
+              <Link
+                to="/booking"
+                onClick={() => setMobileOpen(false)}
+                className="w-full py-3.5 rounded-full bg-[#d49748] hover:bg-[#e0a455] text-[#1c1109] font-bold text-xs tracking-[0.14em] uppercase text-center shadow-md"
+              >
+                BOOK A TABLE
+              </Link>
+              <div className="flex items-center justify-between text-xs text-[#6b5c54] px-1">
+                <span>1:00 PM – 11:00 PM</span>
+                <a href="tel:09437164578" className="font-bold text-[#1c1109] hover:underline">
+                  094371 64578
                 </a>
               </div>
             </div>
