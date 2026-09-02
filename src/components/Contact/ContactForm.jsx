@@ -1,16 +1,25 @@
 import { useState } from "react";
 import { Send, CheckCircle } from "lucide-react";
+import { contactApi } from "../../lib/api";
 
 export default function ContactForm() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
   const [isSending, setIsSending] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.message) return;
 
     setIsSending(true);
+
+    try {
+      await contactApi.submit(form);
+    } catch (err) {
+      console.warn("Backend submit error, using local fallback:", err);
+    }
+
+    // Also persist in localStorage for backup
     const existing = JSON.parse(localStorage.getItem("everbloom_contact_messages") || "[]");
     const newMsg = {
       id: "msg_" + Date.now(),
@@ -21,11 +30,9 @@ export default function ContactForm() {
     };
     localStorage.setItem("everbloom_contact_messages", JSON.stringify([newMsg, ...existing]));
 
-    setTimeout(() => {
-      setIsSending(false);
-      setSubmitted(true);
-      setForm({ name: "", email: "", message: "" });
-    }, 400);
+    setIsSending(false);
+    setSubmitted(true);
+    setForm({ name: "", email: "", message: "" });
   };
 
   return (

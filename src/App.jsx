@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router";
+import { Routes, Route, useLocation } from "react-router";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Menu from "./pages/Menu";
@@ -8,16 +8,34 @@ import Booking from "./pages/Booking";
 import Events from "./pages/Events";
 import LinkHub from "./pages/LinkHub";
 import NotFound from "./pages/NotFound";
+import Admin from "./pages/Admin";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ChatAssistant from "./components/ChatAssistant";
 import ScrollToTop from "./components/ScrollToTop";
 import BackToTop from "./components/BackToTop";
+import HomePromoPopup from "./components/Home/HomePromoPopup";
 
 export default function App() {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith("/admin");
+
+  if (isAdminRoute) {
+    return (
+      <div className="min-h-screen bg-[#faf7f2]">
+        <ScrollToTop />
+        <Routes>
+          <Route path="/admin/*" element={<Admin />} />
+          <Route path="/admin" element={<Admin />} />
+        </Routes>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[var(--color-cream)] flex flex-col justify-between">
       <ScrollToTop />
+      <HomePromoPopup />
       <Navbar />
       <main className="flex-1">
         <Routes>
@@ -38,3 +56,4 @@ export default function App() {
     </div>
   );
 }
+

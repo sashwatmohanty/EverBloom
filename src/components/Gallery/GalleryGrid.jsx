@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, ZoomIn } from "lucide-react";
+import { photosApi } from "../../lib/api";
 
 const galleryCategories = [
   { key: "all", label: "All Photos" },
@@ -8,7 +9,7 @@ const galleryCategories = [
   { key: "food", label: "Food & Brews" },
 ];
 
-const galleryImages = [
+const defaultGalleryImages = [
   {
     src: "/everbloom/interior-mural.png",
     alt: "Iconic Blooming Roses Floral Wall Mural",
@@ -72,23 +73,32 @@ const galleryImages = [
     desc: "Rich espresso blended with hazelnut and creamy froth.",
     span: "",
   },
-  {
-    src: "/everbloom/logo.png",
-    alt: "The Everbloom Artisanal Coffee Emblem",
-    category: "interior",
-    desc: "The symbol of good food, artisanal coffee & blooming moods.",
-    span: "",
-  },
 ];
 
 export default function GalleryGrid() {
   const [activeFilter, setActiveFilter] = useState("all");
   const [lightboxImg, setLightboxImg] = useState(null);
+  const [images, setImages] = useState(defaultGalleryImages);
+
+  useEffect(() => {
+    const fetchPhotos = async () => {
+      try {
+        const res = await photosApi.getAll();
+        if (res && res.success && res.data && res.data.length > 0) {
+          setImages(res.data);
+        }
+      } catch (err) {
+        console.warn("Could not load dynamic photos, using defaults:", err);
+      }
+    };
+
+    fetchPhotos();
+  }, []);
 
   const displayedImages =
     activeFilter === "all"
-      ? galleryImages
-      : galleryImages.filter((img) => img.category === activeFilter);
+      ? images
+      : images.filter((img) => img.category === activeFilter);
 
   return (
     <section className="section-padding py-16 lg:py-24 bg-[#faf7f2]">

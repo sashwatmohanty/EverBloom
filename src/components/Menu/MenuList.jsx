@@ -1,4 +1,7 @@
-const menuSections = [
+import { useState, useEffect } from "react";
+import { menuApi } from "../../lib/api";
+
+const defaultMenuSections = [
   {
     number: "01",
     eyebrow: "BEGIN YOUR JOURNEY",
@@ -126,11 +129,56 @@ const menuSections = [
   },
 ];
 
+const categoryMeta = {
+  "Starters & Wraps": { number: "01", eyebrow: "BEGIN YOUR JOURNEY" },
+  "Pizzas & Burgers": { number: "02", eyebrow: "SIGNATURE CREATIONS" },
+  "Pastas & Mains": { number: "03", eyebrow: "ITALIAN CLASSICS" },
+  "Signature Coolers": { number: "04", eyebrow: "HOUSE REFRESHERS" },
+  "Coffee & Desserts": { number: "05", eyebrow: "SWEET FINALE & BREWS" },
+};
+
 export default function MenuList() {
+  const [sections, setSections] = useState(defaultMenuSections);
+
+  useEffect(() => {
+    const fetchMenu = async () => {
+      try {
+        const res = await menuApi.getAll();
+        if (res && res.success && res.data && res.data.length > 0) {
+          // Group items by category
+          const grouped = {};
+          res.data.forEach((item) => {
+            const cat = item.category || "Starters & Wraps";
+            if (!grouped[cat]) grouped[cat] = [];
+            grouped[cat].push(item);
+          });
+
+          const dynamicSections = Object.keys(grouped).map((catKey, idx) => {
+            const meta = categoryMeta[catKey] || {
+              number: String(idx + 1).padStart(2, "0"),
+              eyebrow: "OUR SELECTION",
+            };
+            return {
+              number: meta.number,
+              eyebrow: meta.eyebrow,
+              title: catKey,
+              items: grouped[catKey],
+            };
+          });
+
+          setSections(dynamicSections);
+        }
+      } catch (err) {
+        console.warn("Could not load dynamic menu, using defaults:", err);
+      }
+    };
+
+    fetchMenu();
+  }, []);
   return (
     <div className="section-padding py-16 sm:py-24 bg-white text-[#1c1109]">
       <div className="max-w-7xl mx-auto space-y-20 sm:space-y-28">
-        {menuSections.map((sec, idx) => (
+        {sections.map((sec, idx) => (
           <section key={idx}>
             {/* Section Header with Number Watermark */}
             <div className="flex items-end justify-between border-b border-[#e8ded3] pb-4 mb-10 sm:mb-12">
