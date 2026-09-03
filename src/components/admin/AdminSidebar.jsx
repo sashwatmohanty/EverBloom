@@ -1,40 +1,39 @@
-import { 
-  LayoutDashboard, 
-  Image as ImageIcon, 
-  Mail, 
-  Megaphone, 
-  UtensilsCrossed, 
-  LogOut, 
-  ExternalLink,
-  Coffee,
-  X,
-  Sparkles
-} from "lucide-react";
 import { Link } from "react-router";
+import {
+  LayoutDashboard,
+  UtensilsCrossed,
+  CalendarCheck,
+  MessageSquare,
+  Settings,
+  ExternalLink,
+  LogOut,
+  Sparkles,
+  ShieldCheck,
+  X,
+} from "lucide-react";
 
-export default function AdminSidebar({ 
-  activeTab, 
-  setActiveTab, 
-  onLogout, 
-  unreadCount = 0, 
-  activePopup = false,
-  isOpen, 
-  onClose 
+export default function AdminSidebar({
+  activeTab,
+  setActiveTab,
+  adminUser,
+  onLogout,
+  pendingReservationsCount = 0,
+  unreadMessagesCount = 0,
+  isMobileOpen = false,
+  onCloseMobile = () => {},
 }) {
-  const menuItems = [
+  const navItems = [
     {
-      id: "dashboard",
-      label: "Dashboard",
+      id: "overview",
+      label: "Dashboard Overview",
       icon: LayoutDashboard,
       badge: null,
-      desc: "Overview & metrics",
     },
     {
-      id: "photos",
-      label: "Patho (Photos)",
-      icon: ImageIcon,
+      id: "menu",
+      label: "Dishes & Pricing",
+      icon: UtensilsCrossed,
       badge: null,
-      desc: "Gallery & wall art",
     },
     {
       id: "contact",
