@@ -1,98 +1,221 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router";
+import { Sparkles, ArrowRight, Star, Flame } from "lucide-react";
+import api from "../../lib/api";
+import ScrollReveal from "../ui/ScrollReveal";
+
+const initialDishes = [
+  {
+    name: "Crispy Peri-Peri Chicken Wrap",
+    category: "Starters & Wraps",
+    desc: "Tender spiced chicken, crisp lettuce, and house peri-peri drizzle in toasted flatbread.",
+    price: "₹240",
+    image: "/tacos.jpg",
+    isVegetarian: false,
+    badge: "Bestseller",
+  },
+  {
+    name: "Wood-Fired Margherita Pizza",
+    category: "Pizzas & Burgers",
+    desc: "San Marzano tomatoes, fresh mozzarella, and aromatic basil leaves on thin artisanal crust.",
+    price: "₹290",
+    image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&q=80&w=800",
+    isVegetarian: true,
+    badge: "Chef's Special",
+  },
+  {
+    name: "Classic Aglio Olio Peperoncino",
+    category: "Pastas & Mains",
+    desc: "Spaghetti tossed in extra virgin olive oil, golden garlic, chili flakes, and parsley.",
+    price: "₹260",
+    image: "/pasta.jpg",
+    isVegetarian: true,
+  },
+  {
+    name: "Everbloom Berry Blossom Fizz",
+    category: "Signature Coolers",
+    desc: "Our house special refresher with muddled forest berries, mint, lime, and crushed ice.",
+    price: "₹190",
+    image: "/everbloom/signature-coolers.jpg",
+    isVegetarian: true,
+    badge: "Most Loved",
+  },
+  {
+    name: "Blueberry Baked Cheesecake",
+    category: "Coffee & Desserts",
+    desc: "Philadelphia style baked cheesecake crowned with wild mountain blueberry compote.",
+    price: "₹240",
+    image: "/cheesecake.jpg",
+    isVegetarian: true,
+  },
+  {
+    name: "Signature Hazelnut Frappe",
+    category: "Coffee & Desserts",
+    desc: "Double espresso blended with roasted hazelnut, cold milk, and rich micro-foam.",
+    price: "₹210",
+    image: "/iced-latte.jpg",
+    isVegetarian: true,
+    badge: "Signature Brew",
+  },
+];
 
 export default function FeaturedMenuSection() {
-  const dishes = [
-    {
-      name: "Crispy Peri-Peri Wrap",
-      desc: "Tender spiced chicken, crisp lettuce, and house peri-peri drizzle in warm flatbread.",
-      price: "₹240",
-      image: "/tacos.jpg",
-    },
-    {
-      name: "Everbloom Berry Fizz",
-      desc: "Muddled forest berries, fresh mint, lime, and crushed sparkling ice.",
-      price: "₹190",
-      image: "/everbloom/signature-coolers.jpg",
-    },
-    {
-      name: "Wood-Fired Margherita",
-      desc: "San Marzano tomato base, fresh basil leaves, and bubbling melted mozzarella.",
-      price: "₹290",
-      image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-      name: "Classic Aglio Olio Peperoncino",
-      desc: "Spaghetti tossed in extra virgin olive oil, golden toasted garlic, and chili flakes.",
-      price: "₹260",
-      image: "/pasta.jpg",
-    },
-    {
-      name: "Blueberry Baked Cheesecake",
-      desc: "New York style cheesecake topped with wild mountain blueberry compote.",
-      price: "₹240",
-      image: "/cheesecake.jpg",
-    },
-    {
-      name: "Signature Hazelnut Frappe",
-      desc: "Double espresso blended with roasted hazelnut, cold milk, and rich micro-foam.",
-      price: "₹210",
-      image: "/iced-latte.jpg",
-    },
-  ];
+  const [dishes, setDishes] = useState(initialDishes);
+  const [activeFilter, setActiveFilter] = useState("ALL");
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadLiveMenu() {
+      try {
+        const res = await api.getAllMenuItems({ isAvailable: "true" });
+        if (isMounted && res.data && res.data.length > 0) {
+          const mapped = res.data.slice(0, 6).map((item) => ({
+            name: item.name,
+            category: item.category,
+            desc: item.description,
+            price: typeof item.price === "number" ? `₹${item.price}` : item.price,
+            image: item.image,
+            isVegetarian: item.isVegetarian !== false,
+            badge: item.tags?.[0] || (item.isSpecial ? "Featured" : null),
+          }));
+          setDishes(mapped);
+        }
+      } catch (err) {
+        console.warn("Using offline fallback featured dishes:", err.message);
+      }
+    }
+
+    loadLiveMenu();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const categories = ["ALL", "Starters & Wraps", "Pizzas & Burgers", "Pastas & Mains", "Signature Coolers", "Coffee & Desserts"];
+
+  const filteredDishes = dishes.filter((dish) => {
+    if (activeFilter === "ALL") return true;
+    return dish.category === activeFilter;
+  });
 
   return (
-    <section className="section-padding py-20 lg:py-28 bg-white text-[#1c1109] relative">
+    <section className="section-padding py-20 lg:py-28 bg-white text-[#1c1109] relative overflow-hidden">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center max-w-xl mx-auto mb-14">
-          <span className="text-[11px] sm:text-xs tracking-[0.25em] text-[#c88242] uppercase font-bold block mb-3">
-            CULINARY CRAFT
+        {/* Top Header with Scroll Reveal */}
+        <ScrollReveal variant="up" className="text-center max-w-2xl mx-auto mb-10">
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#c88242]/15 text-[#c88242] text-[10px] font-extrabold uppercase tracking-widest mb-3">
+            <Sparkles className="w-3 h-3" />
+            CULINARY EXCELLENCE
           </span>
-          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1c1109] mb-4">
-            Signature Dishes
+          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1c1109] mb-3">
+            Signature Café Dishes
           </h2>
-          <div className="w-16 h-[2px] bg-[#d49748] mx-auto" />
-        </div>
+          <p className="text-xs sm:text-sm text-[#6b5c54]">
+            Handcrafted fresh to order with authentic ingredients and artisanal passion.
+          </p>
+        </ScrollReveal>
 
-        {/* 6 Cards 3x2 Grid */}
+        {/* Filter Pills with Scroll Reveal */}
+        <ScrollReveal variant="scale" delay={150} className="flex flex-wrap items-center justify-center gap-2 mb-12">
+          {categories.map((cat) => {
+            const isSelected = activeFilter === cat;
+            return (
+              <button
+                key={cat}
+                onClick={() => setActiveFilter(cat)}
+                className={`px-4 py-2 rounded-full text-xs font-bold transition-all duration-300 ${
+                  isSelected
+                    ? "bg-[#2b1810] text-white shadow-md scale-105"
+                    : "bg-[#faf7f2] hover:bg-[#e8ded3] text-[#6b5c54] border border-[#e8ded3]"
+                }`}
+              >
+                {cat === "ALL" ? "All Signatures" : cat}
+              </button>
+            );
+          })}
+        </ScrollReveal>
+
+        {/* 6 Animated Cards Grid with Staggered Scroll Reveals */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {dishes.map((dish, i) => (
-            <div
-              key={i}
-              className="group rounded-3xl overflow-hidden bg-[#faf7f2] border border-[#e8ded3] hover:shadow-xl transition-all duration-500 flex flex-col justify-between"
-            >
-              <div className="relative h-60 sm:h-64 overflow-hidden">
-                <img
-                  src={dish.image}
-                  alt={dish.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                {dish.price && (
-                  <div className="absolute top-4 right-4 px-3.5 py-1 rounded-full bg-white/95 backdrop-blur-md text-xs font-bold text-[#1c1109] shadow-md">
-                    {dish.price}
-                  </div>
-                )}
-              </div>
+          {filteredDishes.map((dish, i) => {
+            const delays = [100, 150, 200, 250, 300, 350];
+            return (
+              <ScrollReveal
+                key={dish.name || i}
+                variant="up"
+                delay={delays[i] || 100}
+                className="h-full"
+              >
+                <div className="group h-full rounded-3xl overflow-hidden bg-[#faf7f2] border border-[#e8ded3] hover:border-[#c88242]/60 hover:shadow-2xl transition-all duration-500 flex flex-col justify-between hover:-translate-y-1.5">
+                  <div className="relative h-60 sm:h-64 overflow-hidden bg-gray-100">
+                    <img
+                      src={dish.image}
+                      alt={dish.name}
+                      className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700"
+                    />
 
-              <div className="p-6">
-                <h3 className="font-serif text-xl font-normal text-[#1c1109] group-hover:text-[#c88242] transition-colors mb-2">
-                  {dish.name}
-                </h3>
-                <p className="text-xs sm:text-sm text-[#6b5c54] font-light leading-relaxed">
-                  {dish.desc}
-                </p>
-              </div>
-            </div>
-          ))}
+                    {/* Price Tag with Subtle Shadow */}
+                    <div className="absolute top-4 right-4 px-3.5 py-1 rounded-full bg-white/95 backdrop-blur-md text-xs font-bold text-[#1c1109] shadow-lg group-hover:scale-105 transition-transform">
+                      {dish.price}
+                    </div>
+
+                    {/* Veg / Non-Veg Indicator */}
+                    <div className="absolute top-4 left-4 p-1.5 rounded-full bg-white/95 backdrop-blur-md shadow-md">
+                      <div
+                        className={`w-2.5 h-2.5 rounded-full ${
+                          dish.isVegetarian !== false ? "bg-emerald-600" : "bg-red-600"
+                        }`}
+                        title={dish.isVegetarian !== false ? "Vegetarian" : "Non-Vegetarian"}
+                      />
+                    </div>
+
+                    {/* Badge Tag if any */}
+                    {dish.badge && (
+                      <div className="absolute bottom-4 left-4 px-3 py-1 rounded-full bg-[#2b1810]/80 backdrop-blur-md text-[10px] font-bold text-[#fcd9b8] uppercase tracking-wider shadow-md">
+                        {dish.badge}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="p-6 flex-1 flex flex-col justify-between">
+                    <div>
+                      <h3 className="font-serif text-xl font-normal text-[#1c1109] group-hover:text-[#c88242] transition-colors mb-2">
+                        {dish.name}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-[#6b5c54] font-light leading-relaxed">
+                        {dish.desc}
+                      </p>
+                    </div>
+
+                    <div className="pt-4 mt-4 border-t border-[#e8ded3] flex items-center justify-between">
+                      <span className="text-[11px] font-semibold text-[#c88242]">
+                        Freshly Prepared
+                      </span>
+                      <Link
+                        to="/menu"
+                        className="inline-flex items-center gap-1 text-xs font-bold text-[#1c1109] group-hover:text-[#c88242] group-hover:translate-x-1 transition-all"
+                      >
+                        <span>View in Menu</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </ScrollReveal>
+            );
+          })}
         </div>
 
-        <div className="text-center mt-12">
+        {/* View Full Menu CTA with Scroll Reveal */}
+        <ScrollReveal variant="up" delay={200} className="text-center mt-14">
           <Link
             to="/menu"
-            className="inline-flex items-center justify-center px-8 py-3.5 rounded-full bg-[#1c1109] hover:bg-[#2e1c10] text-white text-xs font-bold tracking-[0.14em] uppercase transition-all shadow-md"
+            className="btn-espresso px-8 py-3.5 text-xs font-bold tracking-[0.14em] uppercase shadow-lg hover:shadow-xl inline-flex items-center gap-2 group"
           >
-            VIEW FULL MENU
+            <span>EXPLORE FULL CAFÉ MENU</span>
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   );

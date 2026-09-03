@@ -126,6 +126,9 @@ export default function Footer() {
             <p>&copy; {new Date().getFullYear()} Everbloom Café. All rights reserved. Bhubaneswar, Odisha.</p>
             <div className="flex items-center gap-6">
               <span className="text-white/60">Air-Conditioned Indoor &amp; Nature Outdoor Patio</span>
+              <Link to="/admin" className="text-white/40 hover:text-[#e29b5a] transition-colors">
+                Staff Portal
+              </Link>
             </div>
           </div>
         </div>

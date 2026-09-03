@@ -1,18 +1,19 @@
 import { Link } from "react-router";
+import ScrollReveal from "../ui/ScrollReveal";
 
 export default function ReviewsSection() {
   const moments = [
-    { src: "/pasta.jpg", alt: "Handcrafted Artisanal Pasta", span: "" },
-    { src: "/everbloom/outdoor-patio.jpg", alt: "Nature Garden Patio Under String Lights", span: "" },
-    { src: "/everbloom/interior-wall-neon.png", alt: "Warm Ambient AC Indoor Lounge", span: "" },
+    { src: "/everbloom/espresso-crema-macro.jpg", alt: "Artisanal Crema Espresso Extraction", span: "" },
+    { src: "/everbloom/barista-latte-art.jpg", alt: "Velvety Rosetta Latte Art by Barista", span: "" },
+    { src: "/everbloom/twilight-botanical-patio.jpg", alt: "Botanical Garden Patio at Twilight", span: "" },
     { src: "/everbloom/signature-coolers.jpg", alt: "Signature Berry Blossom Coolers", span: "" },
   ];
 
   return (
     <section className="section-padding py-20 lg:py-28 bg-[#f5ede4]/75 text-[#1c1109] relative overflow-hidden">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-        {/* Left Intro */}
-        <div className="lg:col-span-5">
+        {/* Left Intro with Scroll Reveal */}
+        <ScrollReveal variant="left" className="lg:col-span-5">
           <div className="flex items-center gap-2 mb-4">
             <span className="text-[11px] sm:text-xs tracking-[0.25em] text-[#c88242] uppercase font-bold">
               VISUAL JOURNEY
@@ -34,14 +35,16 @@ export default function ReviewsSection() {
             <span>VIEW FULL GALLERY</span>
             <span>→</span>
           </Link>
-        </div>
+        </ScrollReveal>
 
-        {/* Right 2x2 Photo Grid */}
+        {/* Right 2x2 Photo Grid with Scroll Reveals */}
         <div className="lg:col-span-7">
           <div className="grid grid-cols-2 gap-3.5 sm:gap-5">
             {moments.map((img, i) => (
-              <div
+              <ScrollReveal
                 key={i}
+                variant="scale"
+                delay={100 + i * 100}
                 className="relative h-44 sm:h-56 md:h-64 rounded-3xl overflow-hidden group shadow-md bg-[#2b1810]"
               >
                 <img
@@ -55,7 +58,7 @@ export default function ReviewsSection() {
                     {img.alt}
                   </p>
                 </div>
-              </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>

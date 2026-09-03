@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router";
+import { Routes, Route, useLocation } from "react-router";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Menu from "./pages/Menu";
@@ -7,6 +7,7 @@ import Contact from "./pages/Contact";
 import Booking from "./pages/Booking";
 import Events from "./pages/Events";
 import LinkHub from "./pages/LinkHub";
+import AdminMenu from "./pages/AdminMenu";
 import NotFound from "./pages/NotFound";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -15,6 +16,21 @@ import ScrollToTop from "./components/ScrollToTop";
 import BackToTop from "./components/BackToTop";
 
 export default function App() {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith("/admin");
+
+  if (isAdminRoute) {
+    return (
+      <div className="min-h-screen bg-[#faf7f2]">
+        <ScrollToTop />
+        <Routes>
+          <Route path="/admin" element={<AdminMenu />} />
+          <Route path="/admin/*" element={<AdminMenu />} />
+        </Routes>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[var(--color-cream)] flex flex-col justify-between">
       <ScrollToTop />

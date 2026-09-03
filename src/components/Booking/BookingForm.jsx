@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Calendar, Clock, Users, Phone, User, FileText, CheckCircle, ArrowRight } from "lucide-react";
+import api from "../../lib/api";
 
 export default function BookingForm() {
   const [form, setForm] = useState({
@@ -11,12 +12,31 @@ export default function BookingForm() {
     notes: "",
   });
   const [confirmed, setConfirmed] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name || !form.phone || !form.date || !form.time) return;
 
+    setIsSubmitting(true);
+
+    try {
+      // Save reservation directly to backend MongoDB
+      await api.createReservation({
+        name: form.name,
+        phone: form.phone,
+        date: form.date,
+        time: form.time,
+        guests: Number(form.guests),
+        notes: form.notes || "",
+      });
+    } catch (err) {
+      console.warn("Backend reservation save warning:", err.message);
+    }
+
     setConfirmed(true);
+    setIsSubmitting(false);
+
     const ownerPhone = "919437164578";
     const message = `New Table Booking Request!%0A%0AName: ${encodeURIComponent(form.name)}%0APhone: ${encodeURIComponent(form.phone)}%0ADate: ${encodeURIComponent(form.date)}%0ATime: ${encodeURIComponent(form.time)}%0AGuests: ${encodeURIComponent(form.guests)}%0ANotes: ${encodeURIComponent(form.notes || "None")}`;
     const whatsappUrl = `https://wa.me/${ownerPhone}?text=${message}`;
