@@ -2,17 +2,6 @@ import { Link } from "react-router";
 import { Sparkles, MapPin, Wind, Trees, Camera, Clock } from "lucide-react";
 
 export default function HeroSection() {
-  const tickerItems = [
-    "☕ Artisanal Arabica Espressos",
-    "🍕 Wood-Fired Thin Crust Pizzas",
-    "🌯 Loaded Peri-Peri Wraps",
-    "🍹 Signature Berry Blossom Coolers",
-    "🍰 Blueberry Baked Cheesecake",
-    "🌿 Nature Garden Patio",
-    "❄️ Climate-Controlled AC Lounge",
-    "📍 Near Sum Ultimate Medicare, Bhubaneswar",
-  ];
-
   return (
     <section className="relative w-full min-h-[100dvh] flex flex-col justify-between overflow-hidden bg-[#120a07] text-white">
       {/* Background Cafe Video with Cinematic Glow */}
@@ -133,18 +122,7 @@ export default function HeroSection() {
           </div>
         </div>
       </div>
-
-      {/* Infinite Marquee Ticker Strip at bottom */}
-      <div className="relative z-10 w-full bg-[#180e09]/90 backdrop-blur-md border-t border-white/10 py-2.5 overflow-hidden">
-        <div className="animate-marquee whitespace-nowrap flex items-center gap-8 text-[11px] sm:text-xs font-semibold text-white/80 tracking-wide uppercase">
-          {[...tickerItems, ...tickerItems].map((item, idx) => (
-            <span key={idx} className="inline-flex items-center gap-2">
-              <span>{item}</span>
-              <span className="text-[#c88242]">•</span>
-            </span>
-          ))}
-        </div>
-      </div>
     </section>
   );
 }
+

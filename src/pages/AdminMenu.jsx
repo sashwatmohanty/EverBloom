@@ -3,14 +3,17 @@ import { Link } from "react-router";
 import { ShieldCheck, AlertCircle, ArrowLeft, CheckCircle2, X } from "lucide-react";
 import api, { getAdminToken, getAdminUser } from "../lib/api";
 
-import AdminSidebar from "../components/Admin/AdminSidebar";
-import AdminTopNavbar from "../components/Admin/AdminTopNavbar";
-import AdminOverview from "../components/Admin/AdminOverview";
-import AdminMenuList from "../components/Admin/AdminMenuList";
-import AdminReservationsView from "../components/Admin/AdminReservationsView";
-import AdminInquiriesView from "../components/Admin/AdminInquiriesView";
-import AdminSettingsView from "../components/Admin/AdminSettingsView";
-import ItemModal from "../components/Admin/ItemModal";
+import AdminSidebar from "../components/admin/AdminSidebar";
+import AdminTopNavbar from "../components/admin/AdminTopNavbar";
+import AdminOverview from "../components/admin/AdminOverview";
+import AdminMenuList from "../components/admin/AdminMenuList";
+import AdminReservationsView from "../components/admin/AdminReservationsView";
+import AdminInquiriesView from "../components/admin/AdminInquiriesView";
+import AdminSettingsView from "../components/admin/AdminSettingsView";
+import ItemModal from "../components/admin/ItemModal";
+import PopupSection from "../components/admin/sections/PopupSection";
+import PhotosSection from "../components/admin/sections/PhotosSection";
+import { popupApi, photosApi } from "../lib/api";
 
 export default function AdminMenu() {
   const [token, setToken] = useState(getAdminToken());
@@ -22,7 +25,7 @@ export default function AdminMenu() {
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState("");
 
-  // Navigation state: "overview" | "menu" | "reservations" | "inquiries" | "settings"
+  // Navigation state: "overview" | "menu" | "reservations" | "popups" | "photos" | "inquiries" | "settings"
   const [activeTab, setActiveTab] = useState("overview");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
@@ -30,6 +33,8 @@ export default function AdminMenu() {
   const [menuItems, setMenuItems] = useState([]);
   const [reservations, setReservations] = useState([]);
   const [contacts, setContacts] = useState([]);
+  const [popups, setPopups] = useState([]);
+  const [photos, setPhotos] = useState([]);
   const [stats, setStats] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -52,24 +57,32 @@ export default function AdminMenu() {
     else setIsLoading(true);
 
     try {
-      const [menuRes, resRes, contactRes, overviewRes] = await Promise.allSettled([
+      const [menuRes, resRes, contactRes, overviewRes, popupRes, photoRes] = await Promise.allSettled([
         api.getAllMenuItems(),
         api.getReservations(),
         api.getAllContacts(),
         api.getAdminOverview(),
+        popupApi.getAll(),
+        photosApi.getAll(),
       ]);
 
-      if (menuRes.status === "fulfilled" && menuRes.value.data) {
+      if (menuRes.status === "fulfilled" && menuRes.value?.data) {
         setMenuItems(menuRes.value.data);
       }
-      if (resRes.status === "fulfilled" && resRes.value.data) {
+      if (resRes.status === "fulfilled" && resRes.value?.data) {
         setReservations(resRes.value.data);
       }
-      if (contactRes.status === "fulfilled" && contactRes.value.data) {
-        setContacts(contactRes.value.data.contacts || []);
+      if (contactRes.status === "fulfilled" && contactRes.value?.data) {
+        setContacts(contactRes.value.data.contacts || contactRes.value.data || []);
       }
-      if (overviewRes.status === "fulfilled" && overviewRes.value.data) {
+      if (overviewRes.status === "fulfilled" && overviewRes.value?.data) {
         setStats(overviewRes.value.data.stats);
+      }
+      if (popupRes.status === "fulfilled" && popupRes.value?.data) {
+        setPopups(popupRes.value.data);
+      }
+      if (photoRes.status === "fulfilled" && photoRes.value?.data) {
+        setPhotos(photoRes.value.data);
       }
 
       if (isManualRefresh) {
@@ -254,25 +267,29 @@ export default function AdminMenu() {
   // ─── Render Login Screen if not authenticated ───
   if (!token) {
     return (
-      <div className="min-h-screen pt-28 pb-16 px-4 bg-[#faf7f2] flex items-center justify-center">
-        <div className="w-full max-w-md bg-white rounded-3xl p-8 sm:p-10 shadow-2xl border border-[#e8ded3]">
+      <div className="min-h-screen pt-24 pb-16 px-4 bg-gradient-to-br from-[#120a07] via-[#1c1109] to-[#120a07] flex items-center justify-center relative overflow-hidden">
+        {/* Ambient Backlight Glows */}
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#c88242]/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-10 right-10 w-72 h-72 bg-amber-600/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative z-10 w-full max-w-md bg-white/95 backdrop-blur-2xl rounded-3xl p-8 sm:p-10 shadow-2xl border border-white/20">
           <div className="text-center mb-8">
-            <div className="w-14 h-14 bg-[#c88242]/15 text-[#c88242] rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <ShieldCheck className="w-8 h-8" />
+            <div className="w-14 h-14 bg-gradient-to-tr from-[#c88242] to-amber-500 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-[#c88242]/30">
+              <ShieldCheck className="w-7 h-7" />
             </div>
-            <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-[#c88242]">
+            <span className="text-[10px] tracking-[0.25em] uppercase font-extrabold text-[#c88242]">
               EVERBLOOM CAFÉ
             </span>
             <h1 className="font-serif text-3xl font-normal text-[#1c1109] mt-1">
               Admin Portal
             </h1>
-            <p className="text-xs text-[#6b5c54] mt-2">
-              Sign in to manage dishes, live prices, and table bookings.
+            <p className="text-xs text-[#6b5c54] mt-1.5 font-light">
+              Authenticate to manage live dishes, table bookings &amp; promotions.
             </p>
           </div>
 
           {loginError && (
-            <div className="mb-6 p-3 rounded-2xl bg-red-50 border border-red-200 text-xs text-red-600 flex items-center gap-2">
+            <div className="mb-6 p-3.5 rounded-2xl bg-red-50 border border-red-200 text-xs text-red-600 flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{loginError}</span>
             </div>
@@ -280,27 +297,27 @@ export default function AdminMenu() {
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="text-xs font-bold text-[#2b1810] mb-1 block">
+              <label className="text-xs font-bold text-[#2b1810] mb-1.5 block">
                 Admin Email
               </label>
               <input
                 type="email"
                 value={loginEmail}
                 onChange={(e) => setLoginEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-2xl bg-[#faf7f2] border border-[#e8ded3] text-xs text-[#2b1810] focus:outline-none focus:border-[#c88242]"
+                className="w-full px-4 py-3 rounded-2xl bg-[#faf7f2] border border-[#e8ded3] text-xs text-[#2b1810] font-medium focus:outline-none focus:border-[#c88242] transition-colors"
                 required
               />
             </div>
 
             <div>
-              <label className="text-xs font-bold text-[#2b1810] mb-1 block">
+              <label className="text-xs font-bold text-[#2b1810] mb-1.5 block">
                 Password
               </label>
               <input
                 type="password"
                 value={loginPassword}
                 onChange={(e) => setLoginPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-2xl bg-[#faf7f2] border border-[#e8ded3] text-xs text-[#2b1810] focus:outline-none focus:border-[#c88242]"
+                className="w-full px-4 py-3 rounded-2xl bg-[#faf7f2] border border-[#e8ded3] text-xs text-[#2b1810] font-medium focus:outline-none focus:border-[#c88242] transition-colors"
                 required
               />
             </div>
@@ -308,18 +325,25 @@ export default function AdminMenu() {
             <button
               type="submit"
               disabled={loginLoading}
-              className="btn-caramel w-full py-3.5 text-xs font-bold shadow-lg disabled:opacity-50 mt-2"
+              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#c88242] to-[#a66a33] hover:from-[#a66a33] hover:to-[#8a5424] text-white text-xs font-bold shadow-lg shadow-[#c88242]/30 disabled:opacity-50 mt-2 transition-all active:scale-98"
             >
               {loginLoading ? "Authenticating..." : "Sign In to Dashboard"}
             </button>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-[#e8ded3] text-center">
+          {/* Quick Demo Credentials Autofill */}
+          <div className="mt-5 p-3 rounded-2xl bg-[#faf7f2] border border-[#e8ded3] text-center">
+            <p className="text-[11px] text-[#6b5c54]">
+              Demo: <span className="font-mono text-[#2b1810] font-bold">admin@everbloom.com</span> / <span className="font-mono text-[#2b1810] font-bold">EverBloomAdmin2026!</span>
+            </p>
+          </div>
+
+          <div className="mt-6 pt-5 border-t border-[#e8ded3] text-center">
             <Link
               to="/"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#6b5c54] hover:text-[#c88242]"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#6b5c54] hover:text-[#c88242] transition-colors"
             >
-              <ArrowLeft className="w-3.5 h-3.5" /> Back to Cafe Website
+              <ArrowLeft className="w-3.5 h-3.5" /> Return to Café Website
             </Link>
           </div>
         </div>
@@ -332,6 +356,8 @@ export default function AdminMenu() {
     overview: "Overview & Analytics",
     menu: "Dishes & Pricing Management",
     reservations: "Table Reservations",
+    popups: "Promotions & Offer Modals",
+    photos: "Photo Gallery & Mural Showcase",
     inquiries: "Guest Feedback & Inquiries",
     settings: "System Diagnostics & Settings",
   };
@@ -410,6 +436,14 @@ export default function AdminMenu() {
               onDeleteReservation={handleDeleteReservation}
               isLoading={isLoading}
             />
+          )}
+
+          {activeTab === "popups" && (
+            <PopupSection popups={popups} onRefresh={() => loadAllData(true)} />
+          )}
+
+          {activeTab === "photos" && (
+            <PhotosSection photos={photos} onRefresh={() => loadAllData(true)} />
           )}
 
           {activeTab === "inquiries" && (

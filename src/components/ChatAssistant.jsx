@@ -81,57 +81,84 @@ export default function ChatAssistant() {
 
   return (
     <>
-      {/* Toggle Button */}
-      <button
-        onClick={() => setOpen(!open)}
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-11 h-11 sm:w-12 sm:h-12 p-2.5 sm:p-3 rounded-full btn-caramel text-white flex items-center justify-center shadow-2xl hover:scale-105 transition-all duration-300"
-        title="Chat with Everbloom AI"
-      >
-        {open ? <X className="w-4 h-4 sm:w-5 sm:h-5" /> : <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />}
-      </button>
-
-      {/* Chat Window */}
+      {/* Mobile Dark Backdrop when open */}
       {open && (
         <div
-          className="fixed bottom-18 sm:bottom-22 right-4 sm:right-6 z-50 w-[340px] sm:w-[360px] max-w-[calc(100vw-32px)] bg-white rounded-3xl shadow-2xl border border-[#e8ded3] overflow-hidden animate-fade-in-down flex flex-col"
-          style={{ height: "460px" }}
+          onClick={() => setOpen(false)}
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 sm:hidden animate-fadeIn"
+        />
+      )}
+
+      {/* Floating Toggle Button (Hidden when open on mobile to prevent overlap) */}
+      <button
+        onClick={() => setOpen(!open)}
+        className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-12 h-12 rounded-full bg-gradient-to-tr from-[#c88242] to-amber-500 text-white flex items-center justify-center shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 border border-white/20 ${
+          open ? "max-sm:hidden" : ""
+        }`}
+        title="Chat with Everbloom AI"
+      >
+        {open ? <X className="w-5 h-5" /> : <MessageCircle className="w-5 h-5" />}
+      </button>
+
+      {/* Responsive Chat Window */}
+      {open && (
+        <div
+          className="fixed inset-x-0 bottom-0 max-sm:h-[85vh] max-sm:rounded-t-[2rem] sm:inset-auto sm:bottom-20 sm:right-6 sm:w-[380px] sm:h-[540px] z-50 bg-white shadow-2xl border border-[#e8ded3] sm:rounded-3xl overflow-hidden animate-fadeIn flex flex-col transition-all duration-300"
         >
           {/* Header */}
-          <div className="bg-[#24150e] px-5 py-4 flex items-center justify-between shrink-0 border-b border-white/10">
+          <div className="bg-gradient-to-r from-[#1c1109] via-[#2c1910] to-[#1c1109] px-5 py-4 flex items-center justify-between shrink-0 border-b border-white/10 text-white">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-[#c88242] flex items-center justify-center text-white shadow-md">
+              <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#c88242] to-amber-400 flex items-center justify-center text-white shadow-md shadow-[#c88242]/30">
                 <Sparkles className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-white font-display text-sm font-bold">Everbloom Assistant</p>
-                <p className="text-emerald-400 text-[10px] font-medium">● Open 1 PM – 11 PM</p>
+                <p className="text-white font-serif text-sm font-bold tracking-tight">
+                  Everbloom Assistant
+                </p>
+                <p className="text-emerald-400 text-[10px] font-semibold flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>Open Daily · 1 PM – 11 PM</span>
+                </p>
               </div>
             </div>
-            <button onClick={() => setOpen(false)} className="text-white/60 hover:text-white">
+
+            <button
+              onClick={() => setOpen(false)}
+              className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white flex items-center justify-center transition-colors"
+              aria-label="Close chat"
+            >
               <X className="w-4 h-4" />
             </button>
           </div>
 
-          {/* Messages */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#faf7f2]">
+          {/* Messages Container */}
+          <div
+            ref={scrollRef}
+            className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-[#faf7f2] overscroll-contain"
+          >
             {messages.map((msg, i) => (
-              <div key={i} className={`flex gap-2 ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+              <div
+                key={i}
+                className={`flex gap-2.5 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+              >
                 {msg.role === "bot" && (
-                  <div className="w-7 h-7 rounded-full bg-[#2b1810] text-white flex items-center justify-center shrink-0 mt-0.5 text-xs">
+                  <div className="w-7 h-7 rounded-xl bg-[#2b1810] text-white flex items-center justify-center shrink-0 mt-0.5 text-xs shadow-sm">
                     <Bot className="w-3.5 h-3.5 text-[#e29b5a]" />
                   </div>
                 )}
+
                 <div
-                  className={`max-w-[82%] px-4 py-2.5 rounded-2xl text-xs leading-relaxed ${
+                  className={`max-w-[82%] px-4 py-2.5 rounded-2xl text-xs leading-relaxed shadow-sm ${
                     msg.role === "user"
-                      ? "bg-[#2b1810] text-white rounded-br-none shadow-sm"
-                      : "bg-white text-[#2b1810] rounded-bl-none border border-[#e8ded3] shadow-sm"
+                      ? "bg-[#2b1810] text-white rounded-br-none font-medium"
+                      : "bg-white text-[#2b1810] rounded-bl-none border border-[#e8ded3]/80 font-normal"
                   }`}
                 >
                   {msg.text}
                 </div>
+
                 {msg.role === "user" && (
-                  <div className="w-7 h-7 rounded-full bg-[#c88242] text-white flex items-center justify-center shrink-0 mt-0.5 text-xs">
+                  <div className="w-7 h-7 rounded-xl bg-[#c88242] text-white flex items-center justify-center shrink-0 mt-0.5 text-xs shadow-sm">
                     <User className="w-3.5 h-3.5" />
                   </div>
                 )}
@@ -139,54 +166,58 @@ export default function ChatAssistant() {
             ))}
 
             {isTyping && (
-              <div className="flex gap-2">
-                <div className="w-7 h-7 rounded-full bg-[#2b1810] text-white flex items-center justify-center shrink-0">
+              <div className="flex gap-2.5 items-center">
+                <div className="w-7 h-7 rounded-xl bg-[#2b1810] text-white flex items-center justify-center shrink-0 shadow-sm">
                   <Bot className="w-3.5 h-3.5 text-[#e29b5a]" />
                 </div>
-                <div className="bg-white px-4 py-2.5 rounded-2xl rounded-bl-none border border-[#e8ded3] text-xs">
-                  <span className="inline-flex gap-1 text-[#c88242] animate-pulse font-medium">
-                    Thinking...
+                <div className="bg-white px-4 py-2.5 rounded-2xl rounded-bl-none border border-[#e8ded3] text-xs shadow-sm flex items-center gap-1.5">
+                  <span className="text-[#c88242] font-semibold text-[11px]">Everbloom is typing</span>
+                  <span className="flex gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#c88242] animate-bounce" style={{ animationDelay: "0ms" }} />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#c88242] animate-bounce" style={{ animationDelay: "150ms" }} />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#c88242] animate-bounce" style={{ animationDelay: "300ms" }} />
                   </span>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Quick Question Pills */}
-          <div className="px-3 py-2 bg-[#f4ede4] border-t border-[#e8ded3] flex gap-1.5 overflow-x-auto no-scrollbar">
+          {/* Quick Question Pills (Scrollable with hidden scrollbar) */}
+          <div className="px-3 py-2 bg-[#f5ede4] border-t border-[#e8ded3] flex gap-2 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden shrink-0">
             {quickPills.map((pill, idx) => (
               <button
                 key={idx}
                 onClick={() => handleSend(pill)}
-                className="whitespace-nowrap px-3 py-1 bg-white border border-[#e8ded3] rounded-full text-[11px] text-[#4a3b32] hover:border-[#c88242] hover:text-[#c88242] transition-colors shrink-0 font-medium"
+                className="whitespace-nowrap px-3.5 py-1.5 bg-white hover:bg-[#2b1810] hover:text-white border border-[#e8ded3] rounded-full text-[11px] font-semibold text-[#4a3b32] transition-all shrink-0 shadow-sm active:scale-95"
               >
                 {pill}
               </button>
             ))}
           </div>
 
-          {/* Input */}
+          {/* Input Bar */}
           <form
             onSubmit={(e) => {
               e.preventDefault();
               handleSend();
             }}
-            className="p-3 bg-white border-t border-[#e8ded3] shrink-0"
+            className="p-3 sm:p-3.5 bg-white border-t border-[#e8ded3] shrink-0"
           >
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask a question..."
-                className="flex-1 px-4 py-2 rounded-full border border-[#e8ded3] bg-[#faf7f2] text-xs text-[#2b1810] focus:outline-none focus:border-[#c88242]"
+                placeholder="Ask about coffee, wraps, location..."
+                className="flex-1 px-4 py-2.5 rounded-full border border-[#e8ded3] bg-[#faf7f2] text-xs text-[#2b1810] font-medium focus:outline-none focus:border-[#c88242] focus:bg-white transition-colors"
               />
               <button
                 type="submit"
                 disabled={isTyping || !input.trim()}
-                className="w-8 h-8 rounded-full btn-caramel text-white flex items-center justify-center disabled:opacity-50"
+                className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#c88242] to-amber-500 text-white flex items-center justify-center disabled:opacity-40 transition-all shadow-md active:scale-95 shrink-0"
+                aria-label="Send message"
               >
-                <Send className="w-3.5 h-3.5" />
+                <Send className="w-4 h-4" />
               </button>
             </div>
           </form>

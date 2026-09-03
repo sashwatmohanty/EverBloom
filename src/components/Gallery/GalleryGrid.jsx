@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { X, ZoomIn } from "lucide-react";
-import { photosApi } from "../../lib/api";
+// import { photosApi } from "../../lib/api";
 
 const galleryCategories = [
   { key: "all", label: "All Photos" },

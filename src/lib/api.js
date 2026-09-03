@@ -203,9 +203,10 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ email, password }),
     });
-    if (res.accessToken) {
-      setAdminToken(res.accessToken);
-      setAdminUser(res.admin);
+    if (res.accessToken || res.token) {
+      const token = res.accessToken || res.token;
+      setAdminToken(token);
+      setAdminUser(res.admin || res.user);
     }
     return res;
   },
@@ -229,4 +230,289 @@ export const api = {
   },
 };
 
+// ─── Named API Modules for Specialized Components ───
+
+export const authApi = {
+  login: async (emailOrUsername, password) => {
+    const payload = {
+      email: emailOrUsername.includes("@") ? emailOrUsername : undefined,
+      username: !emailOrUsername.includes("@") ? emailOrUsername : undefined,
+      password,
+    };
+    const res = await request("/admin/login", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+    if (res.accessToken || res.token) {
+      const token = res.accessToken || res.token;
+      const user = res.admin || res.user;
+      setAdminToken(token);
+      setAdminUser(user);
+      return { success: true, token, user, ...res };
+    }
+    return res;
+  },
+  getMe: async () => {
+    try {
+      const res = await request("/admin/profile");
+      return res;
+    } catch {
+      const user = getAdminUser();
+      return user ? { success: true, user } : null;
+    }
+  },
+  logout: () => api.logoutAdmin(),
+};
+
+export const statsApi = {
+  getStats: async () => {
+    try {
+      return await request("/admin/dashboard-stats");
+    } catch {
+      return await request("/admin/dashboard/overview");
+    }
+  },
+};
+
+export const menuApi = {
+  getAll: (params) => api.getAllMenuItems(params),
+  getGrouped: () => api.getGroupedMenu(),
+  get: (id) => api.getMenuItem(id),
+  create: (data) => api.createMenuItem(data),
+  update: (id, data) => api.updateMenuItem(id, data),
+  updatePrice: (id, price) => api.updateItemPrice(id, price),
+  toggleAvailability: (id, isAvail) => api.toggleItemAvailability(id, isAvail),
+  delete: (id) => api.deleteMenuItem(id),
+  seedDefault: (force) => api.seedDefaultMenu(force),
+};
+
+export const contactApi = {
+  submit: (data) => api.submitContact(data),
+  getAll: (params) => api.getAllContacts(params),
+  updateStatus: (id, status) => api.updateContactStatus(id, status),
+  delete: (id) => api.deleteContact(id),
+};
+
+// Client-side fallback storage for Popups & Photos if backend endpoints are unavailable
+const LOCAL_STORAGE_POPUPS_KEY = "everbloom_custom_popups";
+const LOCAL_STORAGE_PHOTOS_KEY = "everbloom_custom_photos";
+
+export const popupApi = {
+  getActive: async () => {
+    try {
+      return await request("/popups/active");
+    } catch {
+      const stored = localStorage.getItem(LOCAL_STORAGE_POPUPS_KEY);
+      if (stored) {
+        try {
+          const list = JSON.parse(stored);
+          const active = list.find((p) => p.active);
+          if (active) return { success: true, data: active };
+        } catch {
+          // ignore
+        }
+      }
+      return {
+        success: true,
+        data: {
+          id: "default_promo_1",
+          title: "Weekend Artisanal Brew Tasting",
+          subtitle: "Get 20% off on all signature hand-poured coffees & fresh berry coolers this Saturday & Sunday.",
+          badge: "Weekend Special",
+          ctaText: "Explore Full Menu",
+          ctaLink: "/menu",
+          imageUrl: "/iced-latte.jpg",
+          active: true,
+        },
+      };
+    }
+  },
+  getAll: async () => {
+    try {
+      return await request("/popups");
+    } catch {
+      const stored = localStorage.getItem(LOCAL_STORAGE_POPUPS_KEY);
+      if (stored) {
+        try {
+          return { success: true, data: JSON.parse(stored) };
+        } catch {
+          // ignore
+        }
+      }
+      return {
+        success: true,
+        data: [
+          {
+            id: "default_promo_1",
+            title: "Weekend Artisanal Brew Tasting",
+            subtitle: "Get 20% off on all signature hand-poured coffees & fresh berry coolers this Saturday & Sunday.",
+            badge: "Weekend Special",
+            ctaText: "Explore Full Menu",
+            ctaLink: "/menu",
+            imageUrl: "/iced-latte.jpg",
+            active: true,
+          },
+        ],
+      };
+    }
+  },
+  create: async (formData) => {
+    try {
+      return await request("/popups", { method: "POST", body: formData });
+    } catch {
+      // Local fallback
+      const newPopup = {
+        id: "popup_" + Date.now(),
+        title: formData.get ? formData.get("title") : formData.title,
+        subtitle: formData.get ? formData.get("subtitle") : formData.subtitle,
+        badge: formData.get ? formData.get("badge") : formData.badge,
+        ctaText: formData.get ? formData.get("ctaText") : formData.ctaText,
+        ctaLink: formData.get ? formData.get("ctaLink") : formData.ctaLink,
+        imageUrl: formData.get ? formData.get("imageUrl") || "/iced-latte.jpg" : formData.imageUrl || "/iced-latte.jpg",
+        active: true,
+      };
+      const stored = JSON.parse(localStorage.getItem(LOCAL_STORAGE_POPUPS_KEY) || "[]");
+      stored.push(newPopup);
+      localStorage.setItem(LOCAL_STORAGE_POPUPS_KEY, JSON.stringify(stored));
+      return { success: true, data: newPopup };
+    }
+  },
+  update: async (id, formData) => {
+    try {
+      return await request(`/popups/${id}`, { method: "PUT", body: formData });
+    } catch {
+      const stored = JSON.parse(localStorage.getItem(LOCAL_STORAGE_POPUPS_KEY) || "[]");
+      const index = stored.findIndex((p) => p.id === id);
+      if (index !== -1) {
+        stored[index] = {
+          ...stored[index],
+          title: formData.get ? formData.get("title") : formData.title,
+          subtitle: formData.get ? formData.get("subtitle") : formData.subtitle,
+          badge: formData.get ? formData.get("badge") : formData.badge,
+          ctaText: formData.get ? formData.get("ctaText") : formData.ctaText,
+          ctaLink: formData.get ? formData.get("ctaLink") : formData.ctaLink,
+        };
+        localStorage.setItem(LOCAL_STORAGE_POPUPS_KEY, JSON.stringify(stored));
+      }
+      return { success: true };
+    }
+  },
+  toggleActive: async (id) => {
+    try {
+      return await request(`/popups/${id}/toggle`, { method: "PATCH" });
+    } catch {
+      const stored = JSON.parse(localStorage.getItem(LOCAL_STORAGE_POPUPS_KEY) || "[]");
+      const updated = stored.map((p) => (p.id === id ? { ...p, active: !p.active } : p));
+      localStorage.setItem(LOCAL_STORAGE_POPUPS_KEY, JSON.stringify(updated));
+      return { success: true };
+    }
+  },
+  delete: async (id) => {
+    try {
+      return await request(`/popups/${id}`, { method: "DELETE" });
+    } catch {
+      const stored = JSON.parse(localStorage.getItem(LOCAL_STORAGE_POPUPS_KEY) || "[]");
+      const filtered = stored.filter((p) => p.id !== id);
+      localStorage.setItem(LOCAL_STORAGE_POPUPS_KEY, JSON.stringify(filtered));
+      return { success: true };
+    }
+  },
+};
+
+export const photosApi = {
+  getAll: async () => {
+    try {
+      return await request("/photos");
+    } catch {
+      const stored = localStorage.getItem(LOCAL_STORAGE_PHOTOS_KEY);
+      if (stored) {
+        try {
+          return { success: true, data: JSON.parse(stored) };
+        } catch {
+          // ignore
+        }
+      }
+      return {
+        success: true,
+        data: [
+          {
+            id: "photo_1",
+            src: "/everbloom/interior-mural.png",
+            alt: "Iconic Blooming Roses Floral Wall Mural",
+            category: "interior",
+            desc: "Our hand-painted floral centerpiece with plush sage seating.",
+          },
+          {
+            id: "photo_2",
+            src: "/everbloom/interior-wall-neon.png",
+            alt: "Warm Ambient AC Indoor Lounge",
+            category: "interior",
+            desc: "Cozy air-conditioned lounge with warm downlighting and acoustic music.",
+          },
+          {
+            id: "photo_3",
+            src: "/everbloom/outdoor-patio.jpg",
+            alt: "Nature-Inspired Outdoor Garden Patio",
+            category: "outdoor",
+            desc: "Lush tropical plants and fairy string lights for evening chill.",
+          },
+          {
+            id: "photo_4",
+            src: "/everbloom/signature-coolers.jpg",
+            alt: "Signature Everbloom Berry & Citrus Coolers",
+            category: "food",
+            desc: "Refreshing handcrafted mocktails with fresh berries and mint.",
+          },
+        ],
+      };
+    }
+  },
+  create: async (formData) => {
+    try {
+      return await request("/photos", { method: "POST", body: formData });
+    } catch {
+      const newPhoto = {
+        id: "photo_" + Date.now(),
+        alt: formData.get ? formData.get("alt") : formData.alt,
+        category: formData.get ? formData.get("category") : formData.category,
+        desc: formData.get ? formData.get("desc") : formData.desc,
+        src: formData.get ? formData.get("imageUrl") || "/everbloom/interior-mural.png" : formData.imageUrl,
+      };
+      const stored = JSON.parse(localStorage.getItem(LOCAL_STORAGE_PHOTOS_KEY) || "[]");
+      stored.push(newPhoto);
+      localStorage.setItem(LOCAL_STORAGE_PHOTOS_KEY, JSON.stringify(stored));
+      return { success: true, data: newPhoto };
+    }
+  },
+  update: async (id, formData) => {
+    try {
+      return await request(`/photos/${id}`, { method: "PUT", body: formData });
+    } catch {
+      const stored = JSON.parse(localStorage.getItem(LOCAL_STORAGE_PHOTOS_KEY) || "[]");
+      const index = stored.findIndex((p) => p.id === id);
+      if (index !== -1) {
+        stored[index] = {
+          ...stored[index],
+          alt: formData.get ? formData.get("alt") : formData.alt,
+          category: formData.get ? formData.get("category") : formData.category,
+          desc: formData.get ? formData.get("desc") : formData.desc,
+        };
+        localStorage.setItem(LOCAL_STORAGE_PHOTOS_KEY, JSON.stringify(stored));
+      }
+      return { success: true };
+    }
+  },
+  delete: async (id) => {
+    try {
+      return await request(`/photos/${id}`, { method: "DELETE" });
+    } catch {
+      const stored = JSON.parse(localStorage.getItem(LOCAL_STORAGE_PHOTOS_KEY) || "[]");
+      const filtered = stored.filter((p) => p.id !== id);
+      localStorage.setItem(LOCAL_STORAGE_PHOTOS_KEY, JSON.stringify(filtered));
+      return { success: true };
+    }
+  },
+};
+
 export default api;
+

@@ -43,20 +43,6 @@ export default function OfferAnnouncementModal() {
 
   return (
     <>
-      {/* Floating Re-Open Badge Button in bottom-left corner */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 left-6 z-40 bg-[#1a0e09] hover:bg-[#2b1810] text-white py-2.5 px-4 rounded-full shadow-2xl border border-[#c88242]/40 hover:border-[#c88242] flex items-center gap-2.5 text-xs font-bold transition-all duration-300 hover:scale-105 group animate-fade-in-up"
-        title="View Today's Offers & Events"
-      >
-        <span className="relative flex h-3 w-3">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#e29b5a] opacity-75" />
-          <span className="relative inline-flex rounded-full h-3 w-3 bg-[#c88242]" />
-        </span>
-        <Flame className="w-4 h-4 text-[#e29b5a] group-hover:scale-110 transition-transform" />
-        <span className="font-serif italic text-white/90">Special Offers &amp; Events</span>
-      </button>
-
       {/* Modal Backdrop & Dialog */}
       {isOpen && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-fadeIn">

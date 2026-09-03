@@ -6,7 +6,6 @@ import {
   EventsPreview,
   ReviewsSection,
   VisitCTASection,
-  OfferAnnouncementModal,
 } from "../components/Home";
 import PageScrollProgress from "../components/ui/PageScrollProgress";
 
@@ -36,9 +35,7 @@ export default function Home() {
 
       {/* Table Reservation Call-To-Action (Pulsing Scale Scroll Reveal) */}
       <VisitCTASection />
-
-      {/* Special Offers & Announcements Popup Window */}
-      <OfferAnnouncementModal />
     </div>
   );
 }
+

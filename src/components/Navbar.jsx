@@ -40,9 +40,8 @@ export default function Navbar() {
     <>
       <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-3 sm:py-4 px-3 sm:px-6 lg:px-10 flex justify-center">
         <nav
-          className={`w-full max-w-5xl transition-all duration-300 rounded-full px-4 sm:px-7 py-2 sm:py-2.5 flex items-center justify-between ${
-            scrolled ? "glass-nav-white-scrolled" : "glass-nav-white"
-          }`}
+          className={`w-full max-w-5xl transition-all duration-300 rounded-full px-4 sm:px-7 py-2 sm:py-2.5 flex items-center justify-between ${scrolled ? "glass-nav-white-scrolled" : "glass-nav-white"
+            }`}
         >
           {/* Brand Logo & Name */}
           <Link to="/" className="flex items-center gap-2.5 shrink-0 group py-0.5">
@@ -64,11 +63,10 @@ export default function Navbar() {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`text-xs tracking-[0.15em] font-semibold transition-colors duration-200 uppercase relative py-1 ${
-                    active
+                  className={`text-xs tracking-[0.15em] font-semibold transition-colors duration-200 uppercase relative py-1 ${active
                       ? "text-[#c88242]"
                       : "text-[#4a3b32] hover:text-[#1c1109]"
-                  }`}
+                    }`}
                 >
                   {link.label}
                   {active && (
@@ -137,11 +135,10 @@ export default function Navbar() {
                       key={link.path}
                       to={link.path}
                       onClick={() => setMobileOpen(false)}
-                      className={`px-4 py-3 text-xs font-bold tracking-[0.14em] uppercase rounded-2xl transition-all flex items-center justify-between ${
-                        active
+                      className={`px-4 py-3 text-xs font-bold tracking-[0.14em] uppercase rounded-2xl transition-all flex items-center justify-between ${active
                           ? "bg-[#1c1109] text-white shadow-md"
                           : "text-[#3d2e26] hover:bg-[#faf7f2]"
-                      }`}
+                        }`}
                     >
                       <span>{link.label}</span>
                       <ChevronRight className={`w-4 h-4 ${active ? "text-[#c88242]" : "text-gray-400"}`} />
