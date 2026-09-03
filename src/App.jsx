@@ -9,11 +9,13 @@ import Events from "./pages/Events";
 import LinkHub from "./pages/LinkHub";
 import AdminMenu from "./pages/AdminMenu";
 import NotFound from "./pages/NotFound";
+import Admin from "./pages/Admin";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ChatAssistant from "./components/ChatAssistant";
 import ScrollToTop from "./components/ScrollToTop";
 import BackToTop from "./components/BackToTop";
+import HomePromoPopup from "./components/Home/HomePromoPopup";
 
 export default function App() {
   const location = useLocation();
@@ -34,6 +36,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[var(--color-cream)] flex flex-col justify-between">
       <ScrollToTop />
+      <HomePromoPopup />
       <Navbar />
       <main className="flex-1">
         <Routes>
@@ -54,3 +57,4 @@ export default function App() {
     </div>
   );
 }
+

@@ -161,6 +161,14 @@ const initialMenuSections = [
   },
 ];
 
+const categoryMeta = {
+  "Starters & Wraps": { number: "01", eyebrow: "BEGIN YOUR JOURNEY" },
+  "Pizzas & Burgers": { number: "02", eyebrow: "SIGNATURE CREATIONS" },
+  "Pastas & Mains": { number: "03", eyebrow: "ITALIAN CLASSICS" },
+  "Signature Coolers": { number: "04", eyebrow: "HOUSE REFRESHERS" },
+  "Coffee & Desserts": { number: "05", eyebrow: "SWEET FINALE & BREWS" },
+};
+
 export default function MenuList() {
   const [sections, setSections] = useState(initialMenuSections);
   const [isLoading, setIsLoading] = useState(true);
